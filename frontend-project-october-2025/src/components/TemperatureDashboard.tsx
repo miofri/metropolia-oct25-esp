@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { LineChart } from '@mui/x-charts/LineChart';
+
 import './Temperature.css';
-import type { TemperatureReading } from '../models/temperature';
+import { LineCharts } from './LineCharts';
+import type { DataGridRow, TemperatureReading } from '../models/temperature';
 import { temperatureAPI } from '../controllers/Temperatures';
+import { TempTable } from './TempTable';
 
 export const TemperatureDashboard: React.FC = () => {
 	const [temperatures, setTemperatures] = useState<TemperatureReading[]>([]);
@@ -35,7 +37,8 @@ export const TemperatureDashboard: React.FC = () => {
 		return <div>Loading temperature data...</div>;
 	}
 
-	const dataset = temperatures.map((t) => ({
+	const dataset: DataGridRow[] = temperatures.map((t) => ({
+		id: t._id,
 		temperature: t.temperature,
 		humidity: t.humidity,
 		time: new Date(t.date).getTime(),
@@ -45,62 +48,14 @@ export const TemperatureDashboard: React.FC = () => {
 		<div className="dashboard">
 			<h1>🌡️ Temperature Dashboard</h1>
 			<div className="chart-group">
-				<div className="temp-history">
-					<h3>Recent Readings</h3>
-					<LineChart
-						dataset={dataset}
-						xAxis={[
-							{
-								dataKey: 'time',
-								label: 'Time',
-								scaleType: 'time',
-								valueFormatter: (value: number) => {
-									return new Date(value).toLocaleTimeString('en-US', {
-										hour: '2-digit',
-										minute: '2-digit',
-									});
-								},
-							},
-						]}
-						yAxis={[{ min: 15, max: 30, label: 'Temperature (°C)' }]}
-						series={[
-							{
-								dataKey: 'temperature',
-								color: 'red',
-								label: 'Temperature (°C)',
-								showMark: false,
-							},
-						]}
-						height={200}
-					/>
-					<LineChart
-						dataset={dataset}
-						xAxis={[
-							{
-								dataKey: 'time',
-								label: 'Time',
-								scaleType: 'time',
-								valueFormatter: (value: number) => {
-									return new Date(value).toLocaleTimeString('en-US', {
-										hour: '2-digit',
-										minute: '2-digit',
-									});
-								},
-							},
-						]}
-						yAxis={[{ min: 0, max: 100, label: 'Humidity (%)' }]}
-						series={[
-							{
-								dataKey: 'humidity',
-								color: 'blue',
-								label: 'Humidity (%)',
-								showMark: false,
-							},
-						]}
-						height={200}
-					/>
+				<div className="temp-table">
+					<TempTable dataset={dataset} />
 				</div>
-				<div className="warning-popup"></div>
+				<div className="temp-line-chart">
+					<h3>Recent Readings</h3>
+					<LineCharts dataset={dataset} />
+				</div>
+				{/* <div className="warning-popup"></div> */}
 			</div>
 		</div>
 	);

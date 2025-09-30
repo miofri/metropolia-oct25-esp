@@ -9,7 +9,7 @@ dbRouters.get('/db-data', async (req, res, next) => {
 			.collection('hist_temp')
 			.find({})
 			.sort({ date: -1 })
-			.limit(20)
+			.limit(10)
 			.toArray();
 		res.send(historicalTemperature);
 	} catch (error) {
